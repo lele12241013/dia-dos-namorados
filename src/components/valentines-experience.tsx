@@ -140,10 +140,10 @@ function getDurationParts(now: number) {
 
 function handleProgressClick(
   e: React.MouseEvent,
-  progressBarRef: React.RefObject<HTMLDivElement>,
+  progressBarRef: React.RefObject<HTMLDivElement | null>,
   duration: number,
-  audioRef: React.RefObject<HTMLAudioElement>,
-  videoRef: React.RefObject<HTMLVideoElement>,
+  audioRef: React.RefObject<HTMLAudioElement | null>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
 ) {
   if (!progressBarRef.current) return;
 
