@@ -419,7 +419,6 @@ export function ValentinesExperience() {
       lerp: 0.085,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       smoothWheel: true,
-      smoothTouch: true,
       gestureOrientation: "vertical",
       wheelMultiplier: 0.85,
       touchMultiplier: 1.1,
@@ -667,7 +666,7 @@ export function ValentinesExperience() {
   const relationship = useMemo(() => getDurationParts(clock), [clock]);
 
   return (
-    <main className="relative overflow-x-hidden text-violet-50">
+    <main className="relative overflow-x-clip text-violet-50">
       <AnimatePresence>
         {isSiteLoading ? (
           <motion.div
@@ -788,14 +787,14 @@ export function ValentinesExperience() {
         />
       ) : null}
 
-      <section id="hero" ref={heroSectionRef} className="scroll-section relative flex min-h-[88vh] items-center justify-center overflow-hidden px-4 py-12 sm:min-h-screen sm:px-6 sm:py-16">
+      <section id="hero" ref={heroSectionRef} className="scroll-section relative flex min-h-[88vh] items-center justify-center overflow-x-clip px-4 py-12 sm:min-h-screen sm:px-6 sm:py-16">
         <motion.div
           style={{ y: heroDepth }}
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 overflow-visible"
           aria-hidden
         >
           <div
-            className="absolute inset-[-18%] blur-2xl"
+            className="absolute inset-[-10%] blur-2xl"
             style={{
               background:
                 "radial-gradient(52% 44% at 50% 8%, rgba(168,85,247,0.28), transparent 72%), radial-gradient(44% 36% at 18% 72%, rgba(236,72,153,0.2), transparent 74%), radial-gradient(40% 34% at 82% 64%, rgba(139,92,246,0.22), transparent 76%)",
