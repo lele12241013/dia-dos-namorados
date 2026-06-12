@@ -46,9 +46,19 @@ type FlowerParticle = {
   colorB: string;
 };
 
+// Base URL for audio/video assets (CDN). Use env var when available.
+const MEDIA_BASE = process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net";
+
+function buildMediaUrl(pathOrUrl: string) {
+  if (!pathOrUrl) return pathOrUrl;
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
+  return `${MEDIA_BASE}/${encodeURIComponent(pathOrUrl)}`;
+}
+
 const tracks: Track[] = [
   // Build audio/video URLs from a CDN base. Configure `NEXT_PUBLIC_AUDIO_BASE_URL`
-  // or fallback to the provided CDN domain.
+  // or fallback to the provided CDN domain. Filenames are encoded to avoid
+  // spaces or special characters breaking requests.
   // Example final url: https://diadosnamorados.b-cdn.net/Daylight.mp4
   {
     id: 1,
@@ -56,8 +66,8 @@ const tracks: Track[] = [
     artist: "Radwimps",
     duration: 243,
     cover: "/yn.jpg",
-    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/your name.mp4`,
-    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/your name.mp4`,
+    audio: "your name.mp4",
+    video: "your name.mp4",
   },
   {
     id: 2,
@@ -65,8 +75,8 @@ const tracks: Track[] = [
     artist: "David Kushner",
     duration: 228,
     cover: "/dl.jpg",
-    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Daylight.mp4`,
-    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Daylight.mp4`,
+    audio: "Daylight.mp4",
+    video: "Daylight.mp4",
   },
   {
     id: 3,
@@ -74,8 +84,8 @@ const tracks: Track[] = [
     artist: "Ed Sheeran",
     duration: 204,
     cover: "/pf.jpg",
-    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Perfect.mp4`,
-    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Perfect.mp4`,
+    audio: "Perfect.mp4",
+    video: "Perfect.mp4",
   },
   {
     id: 4,
@@ -83,8 +93,8 @@ const tracks: Track[] = [
     artist: "Holligan",
     duration: 246,
     cover: "/bt.jpg",
-    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/holligan.mp4`,
-    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/holligan.mp4`,
+    audio: "holligan.mp4",
+    video: "holligan.mp4",
   },
 ];
 
@@ -408,11 +418,59 @@ export function ValentinesExperience() {
   }, [showFlowerBurst]);
 
   useEffect(() => {
-    document.body.style.overflow = isSiteLoading || showFlowerBurst ? "hidden" : "";
+    // Force scroll to top on mount using multiple RAF calls to override browser restoration
+    const resetScroll = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+
+    // Reset immediately
+    resetScroll();
+
+    // Reset on next few frames to override browser history restoration
+    let frameCount = 0;
+    const raf = () => {
+      frameCount++;
+      resetScroll();
+      if (frameCount < 5) {
+        requestAnimationFrame(raf);
+      }
+    };
+    requestAnimationFrame(raf);
 
     return () => {
-      document.body.style.overflow = "";
+      // Cleanup if needed
     };
+  }, []);
+
+  useEffect(() => {
+    // Reset scroll when loading state changes (especially when loading finishes)
+    if (!isSiteLoading) {
+      const resetScroll = () => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      };
+
+      resetScroll();
+
+      let frameCount = 0;
+      const raf = () => {
+        frameCount++;
+        resetScroll();
+        if (frameCount < 5) {
+          requestAnimationFrame(raf);
+        }
+      };
+      requestAnimationFrame(raf);
+    }
+  }, [isSiteLoading]);
+
+  useEffect(() => {
+    // Note: overflow is now controlled exclusively by CSS.
+    // During loading/burst, main element uses fixed positioning with full coverage,
+    // which naturally prevents scrolling without modifying body.style.overflow.
   }, [isSiteLoading, showFlowerBurst]);
 
   useEffect(() => {
@@ -590,8 +648,9 @@ export function ValentinesExperience() {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
     }
+    // Keep the video element muted to avoid duplicate audio (video files contain audio tracks).
     if (videoRef.current) {
-      videoRef.current.volume = isMuted ? 0 : volume;
+      videoRef.current.muted = true;
     }
   }, [volume, isMuted]);
 
@@ -759,7 +818,8 @@ export function ValentinesExperience() {
       {activeTrack.audio ? (
         <audio
           ref={audioRef}
-          src={activeTrack.audio}
+          src={buildMediaUrl(activeTrack.audio)}
+          crossOrigin="anonymous"
           preload="metadata"
           onTimeUpdate={(event) => {
             setElapsed(event.currentTarget.currentTime);
@@ -873,7 +933,9 @@ export function ValentinesExperience() {
                     {activeTrack.video ? (
                       <video
                         ref={videoRef}
-                        src={activeTrack.video}
+                        src={buildMediaUrl(activeTrack.video)}
+                        crossOrigin="anonymous"
+                        muted
                         className="h-full w-full object-cover"
                         loop
                         playsInline
