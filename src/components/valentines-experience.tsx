@@ -4,7 +4,6 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useScroll, useTransform } from "framer-motion";
-import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -414,27 +413,15 @@ export function ValentinesExperience() {
   }, [isSiteLoading, showFlowerBurst]);
 
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.6,
-      lerp: 0.085,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: true,
-      gestureOrientation: "vertical",
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.1,
-    });
-
-    const tick = (time: number) => {
-      lenis.raf(time * 1000);
+    const updateScrub = () => {
+      ScrollTrigger.update();
     };
 
-    gsap.ticker.add(tick);
+    gsap.ticker.add(updateScrub);
     gsap.ticker.lagSmoothing(0);
-    lenis.on("scroll", ScrollTrigger.update);
 
     return () => {
-      gsap.ticker.remove(tick);
-      lenis.destroy();
+      gsap.ticker.remove(updateScrub);
     };
   }, []);
 

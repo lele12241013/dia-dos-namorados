@@ -29,20 +29,7 @@ body {
   max-width: 100%;
   min-height: 100%;
   margin: 0;
-  overflow: hidden;
-}
-
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 body {
