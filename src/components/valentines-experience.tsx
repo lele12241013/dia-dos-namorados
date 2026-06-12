@@ -47,14 +47,17 @@ type FlowerParticle = {
 };
 
 const tracks: Track[] = [
+  // Build audio/video URLs from a CDN base. Configure `NEXT_PUBLIC_AUDIO_BASE_URL`
+  // or fallback to the provided CDN domain.
+  // Example final url: https://diadosnamorados.b-cdn.net/Daylight.mp4
   {
     id: 1,
     title: "Your Name",
     artist: "Radwimps",
     duration: 243,
     cover: "/yn.jpg",
-    audio: "/audio/your name.mp4",
-    video: "/audio/your name.mp4",
+    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/your name.mp4`,
+    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/your name.mp4`,
   },
   {
     id: 2,
@@ -62,8 +65,8 @@ const tracks: Track[] = [
     artist: "David Kushner",
     duration: 228,
     cover: "/dl.jpg",
-    audio: "/audio/Daylight.mp4",
-    video: "/audio/Daylight.mp4",
+    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Daylight.mp4`,
+    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Daylight.mp4`,
   },
   {
     id: 3,
@@ -71,8 +74,8 @@ const tracks: Track[] = [
     artist: "Ed Sheeran",
     duration: 204,
     cover: "/pf.jpg",
-    audio: "/audio/Perfect.mp4",
-    video: "/audio/Perfect.mp4",
+    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Perfect.mp4`,
+    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/Perfect.mp4`,
   },
   {
     id: 4,
@@ -80,8 +83,8 @@ const tracks: Track[] = [
     artist: "Holligan",
     duration: 246,
     cover: "/bt.jpg",
-    audio: "/audio/holligan.mp4",
-    video: "/audio/holligan.mp4",
+    audio: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/holligan.mp4`,
+    video: `${process.env.NEXT_PUBLIC_AUDIO_BASE_URL || "https://diadosnamorados.b-cdn.net"}/holligan.mp4`,
   },
 ];
 
