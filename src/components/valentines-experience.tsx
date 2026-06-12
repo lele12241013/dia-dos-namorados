@@ -594,7 +594,7 @@ export function ValentinesExperience() {
     return () => {
       audio.removeEventListener("canplay", playWhenReady);
     };
-  }, [activeTrack, isPlaying]);
+  }, [activeTrack]);
 
   useEffect(() => {
     if (audioRef.current) {
