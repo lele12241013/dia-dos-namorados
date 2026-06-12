@@ -464,11 +464,16 @@ export function ValentinesExperience() {
         }
       };
       requestAnimationFrame(raf);
-      // Try to start audio playback when loading finishes.
-      // Autoplay may be blocked by the browser; handle promise rejection.
+
       const audio = audioRef.current;
       const video = videoRef.current;
       if (audio) {
+        const originalMuted = audio.muted;
+        const shouldTemporarilyMute = !isMuted;
+        if (shouldTemporarilyMute) {
+          audio.muted = true;
+        }
+
         const tryPlay = async () => {
           try {
             await audio.play();
@@ -479,10 +484,16 @@ export function ValentinesExperience() {
               } catch {}
             }
           } catch (err) {
-            // Autoplay blocked or other error — keep isPlaying false
-            setIsPlaying(false);
+            // Autoplay blocked or other error.
+            // Keep isPlaying true to preserve user expectation and allow retry on interaction.
+            setIsPlaying(true);
+          } finally {
+            if (shouldTemporarilyMute) {
+              audio.muted = originalMuted;
+            }
           }
         };
+
         void tryPlay();
       }
     }
