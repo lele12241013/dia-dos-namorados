@@ -464,6 +464,27 @@ export function ValentinesExperience() {
         }
       };
       requestAnimationFrame(raf);
+      // Try to start audio playback when loading finishes.
+      // Autoplay may be blocked by the browser; handle promise rejection.
+      const audio = audioRef.current;
+      const video = videoRef.current;
+      if (audio) {
+        const tryPlay = async () => {
+          try {
+            await audio.play();
+            setIsPlaying(true);
+            if (video) {
+              try {
+                await video.play();
+              } catch {}
+            }
+          } catch (err) {
+            // Autoplay blocked or other error — keep isPlaying false
+            setIsPlaying(false);
+          }
+        };
+        void tryPlay();
+      }
     }
   }, [isSiteLoading]);
 
